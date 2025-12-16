@@ -22,4 +22,13 @@ body {
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+  .btn {
+    @apply flex items-center justify-center gap-2 px-4 py-2 border border-zinc-700 rounded-md text-sm font-bold;
+  }
+  .btn.blue {
+    @apply bg-sky-700 hover:bg-sky-900 text-white;
+  }
+  .btn.red {
+    @apply bg-red-700 hover:bg-red-900 text-white;
+  }
 }
