@@ -1,3 +1,9 @@
+import Page from "../components/shared/Page";
+
 export default function Home() {
-  return <div>Inicio</div>;
+  return (
+    <Page>
+      <h1>Inicio</h1>
+    </Page>
+  );
 }
