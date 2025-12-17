@@ -31,4 +31,7 @@ body {
   .btn.red {
     @apply bg-red-700 hover:bg-red-900 text-white;
   }
+  .info {
+    @apply flex flex-col items-start justify-center mt-2 w-full bg-zinc-900 border-2 border-zinc-400 p-4 rounded-md;
+  }
 }
