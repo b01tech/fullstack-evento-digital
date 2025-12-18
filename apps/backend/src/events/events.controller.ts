@@ -1,48 +1,53 @@
 import { Body, Controller, Get, Post, Param } from '@nestjs/common';
+import { EventsService } from './events.service';
 import * as core from 'core';
 
 @Controller('events')
 export class EventsController {
+  constructor(private readonly eventsService: EventsService) {}
+
   @Get()
-  getEvents() {
-    return core.events;
+  async getEvents() {
+    return await this.eventsService.getAll();
   }
+
   @Get(':id')
-  getEventById(@Param('id') id: string) {
-    return core.events.find((event) => event.id === id);
+  async getEventById(@Param('id') id: string) {
+    return await this.eventsService.getById(id);
   }
+
   @Get('/exists/:alias')
-  getEventByAlias(@Param('alias') alias: string) {
-    const event = core.events.find((event) => event.alias === alias);
+  async getEventByAlias(@Param('alias') alias: string) {
+    const event = await this.eventsService.getByAlias(alias);
     return event ? { exists: true } : { exists: false };
   }
 
   @Post('/login')
-  login(@Body() data: { id: string; password: string }) {
-    const event = core.events.find(
-      (event) => event.id === data.id && event.password === data.password,
-    );
+  async login(@Body() data: { id: string; password: string }) {
+    const event = await this.eventsService.getLogin(data.id, data.password);
     if (!event) return { error: 'Event not found' };
     return event;
   }
 
   @Post('/register/:alias')
-  register(
+  async register(
     @Param('alias') alias: string,
     @Body() data: { attendee: core.Attendee },
   ) {
-    const event = core.events.find((event) => event.alias === alias);
-    if (event) return { error: 'Event not found' };
-    event!.attendees.push(data.attendee);
+    const event = await this.eventsService.getByAlias(alias);
+    if (!event) return { error: 'Event not found' };
+
+    await this.eventsService.addAttendee(event as core.Event, data.attendee);
     return { success: 'Attendee registered' };
   }
+
   @Post('/create')
-  createEvent(@Body() event: core.Event) {
-    const eventExists = core.events.find(
-      (e) => e.alias === event.alias && e.id === event.id,
-    );
-    if (eventExists) return { error: 'Event already exists' };
-    core.events.push(event);
-    return { success: 'Event created' };
+  async createEvent(@Body() event: core.Event) {
+    try {
+      await this.eventsService.save(event);
+      return { success: 'Event created' };
+    } catch (e) {
+      return { error: 'Event already exists' };
+    }
   }
 }
