@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Event {
+  id String @id @default(uuid())
+  alias String @unique
+  password String
+  name String
+  date DateTime
+  location String
+  description String
+  image String
+  backgroundImage String
+  numberOfAttendees Int
+  attendees Attendee[]
+  @@map("events")
+
+}
+
+model Attendee{
+  id String @id @default(uuid())
+  name String
+  email String
+  isConfirmed Boolean
+  hasPlusOne Boolean
+  plusOneQuantity Int
+  event Event? @relation(fields: [eventId], references: [id])
+  eventId String?
+  @@map("attendees")
+}
